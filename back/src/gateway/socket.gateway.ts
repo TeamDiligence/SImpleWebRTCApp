@@ -44,7 +44,7 @@ export class SocketGateway
   */
   @SubscribeMessage('join_room')
   public joinRoom(client: Socket, data: { room: string; nickname: string }) {
-    this.logger.log(`${data.nickname} 연결!`);
+    this.logger.log(`join_room -----${data.nickname} 연결!` + client.id);
     if (this.users[data.room]) {
       const roomLength = this.users[data.room].length;
       const existUser = this.users[data.room].find((user) => {
@@ -80,27 +80,26 @@ export class SocketGateway
       (user) => user.id != client.id,
     );
 
-    console.log(this.users[data.room]);
-    this.server.to(data.room).emit('all_users', roomUsersInfo);
+    // this.server.to(data.room).emit('all_users', roomUsersInfo);
+    client.in(data.room).emit('all_users', roomUsersInfo);
+    // client.broadcast.emit('all_users,', roomUsersInfo);
   }
 
   @SubscribeMessage('offer')
   public CallUser(client: Socket, data: any): void {
-    const users = this.users[this.simpleRoom[client.id]].filter(
-      (user) => user.id === client.id,
-    );
-    console.log(users);
-    this.logger.log(`[${this.simpleRoom[client.id]}] : ${users[0].nickname}`);
+    this.logger.log('offer Event Handling  ' + client.id);
     client.broadcast.emit('getOffer', data);
   }
 
   @SubscribeMessage('answer')
   public answer(client: Socket, data: any): void {
+    this.logger.log('answer Event Handling  ' + client.id);
     client.broadcast.emit('getAnswer', data);
   }
 
   @SubscribeMessage('candidate')
   public candidate(client: Socket, data: any): void {
+    this.logger.log('candidate Event Handling  ' + client.id);
     client.broadcast.emit('getCandidate', data);
   }
 

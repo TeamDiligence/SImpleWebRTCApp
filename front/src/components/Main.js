@@ -10,7 +10,6 @@ const Main = () => {
   const { setNickname } = useStore();
   const onClickBtn = () => {
     setNickname(nickname);
-    console.log(nickname);
     navigater(`/room/${room}`);
   };
 
